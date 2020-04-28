@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2019/01/17 21:53:38.974.bdsproj,C:\Users\Cricri\Documents\Borland Studio Projects\Project1.bdsproj=C:\Users\Cricri\Documents\Borland Studio Projects\Fractal.bdsproj</Transaction>
+    <Transaction>2019/01/17 21:54:11.211.pas,C:\Users\Cricri\Documents\Borland Studio Projects\Unit1.pas=D:\Delphi projects\Fractal2\Unit1.pas</Transaction>
+    <Transaction>2019/01/17 21:54:11.211.dfm,C:\Users\Cricri\Documents\Borland Studio Projects\Unit1.dfm=D:\Delphi projects\Fractal2\Unit1.dfm</Transaction>
+    <Transaction>2019/01/17 21:54:12.778.bdsproj,C:\Users\Cricri\Documents\Borland Studio Projects\Fractal.bdsproj=D:\Delphi projects\Fractal2\Fractal.bdsproj</Transaction>
+  </Transactions>
+</BorlandProject>
