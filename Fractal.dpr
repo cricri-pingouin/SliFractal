@@ -5,9 +5,7 @@ uses
   Unit1 in 'Unit1.pas' {Form1},
   Unit2 in 'Unit2.pas' {Form2},
   pngimage in 'png\pngimage.pas',
-  pngextra in 'png\pngextra.pas',
   pnglang in 'png\pnglang.pas',
-  zlib in 'png\zlib.pas',
   zlibpas in 'png\zlibpas.pas';
 
 {$R *.res}
