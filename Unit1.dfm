@@ -4,12 +4,12 @@ object Form1: TForm1
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Fractal'
-  ClientHeight = 378
-  ClientWidth = 353
+  ClientHeight = 284
+  ClientWidth = 265
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -13
+  Font.Height = -10
   Font.Name = 'Tahoma'
   Font.Style = []
   Icon.Data = {
@@ -28,13 +28,13 @@ object Form1: TForm1
   OldCreateOrder = False
   OnClose = FormClose
   OnCreate = FormCreate
-  PixelsPerInch = 120
-  TextHeight = 16
+  PixelsPerInch = 96
+  TextHeight = 12
   object Image1: TImage
     Left = 0
     Top = 0
-    Width = 337
-    Height = 337
+    Width = 253
+    Height = 253
   end
   object MainMenu1: TMainMenu
     Left = 272
@@ -51,6 +51,10 @@ object Form1: TForm1
       Caption = 'Save PNG'
       Enabled = False
       OnClick = mniPNGClick
+    end
+    object mniExit: TMenuItem
+      Caption = 'Exit'
+      OnClick = mniExitClick
     end
   end
 end

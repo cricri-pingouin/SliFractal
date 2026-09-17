@@ -1,96 +1,98 @@
-Unit Unit1;
+unit Unit1;
 
-Interface
+interface
 
-Uses
+uses
   Windows, SysUtils, Classes, Controls, Forms, Graphics, Inifiles, Menus,
   ExtCtrls, Dialogs;
 
-Type
-  TForm1 = Class(TForm)
+type
+  TForm1 = class(TForm)
     MainMenu1: TMainMenu;
     mniDraw: TMenuItem;
     mniOptions: TMenuItem;
     mniPNG: TMenuItem;
+    mniExit: TMenuItem;
     Image1: TImage;
-    Procedure DrawMandelbrot(X, Y, MinX, MinY: Single; SizeX, SizeY, MaxCount: Integer);
-    Procedure FormClose(Sender: TObject; Var Action: TCloseAction);
-    Procedure FormCreate(Sender: TObject);
-    Procedure mniDrawClick(Sender: TObject);
-    Procedure mniOptionsClick(Sender: TObject);
-    Procedure mniPNGClick(Sender: TObject);
-  Private
+    procedure DrawMandelbrot(dX, dY, MinX, MinY: Single; SizeX, SizeY, MaxCount: Integer);
+    procedure FormCreate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure mniDrawClick(Sender: TObject);
+    procedure mniOptionsClick(Sender: TObject);
+    procedure mniPNGClick(Sender: TObject);
+    procedure mniExitClick(Sender: TObject);
+  private
     { Private declarations }
-  Public
+  public
     { Public declarations }
     CanvasWidth, CanvasHeight, MaxIterations: Integer;
     Xmin, Xmax, Ymin, Ymax: Single;
-    Colour: String;
-  End;
+    Colour: string;
+  end;
 
-Var
+var
   Form1: TForm1;
 
-Implementation
+implementation
 
-Uses
+uses
   Unit2, pngimage;
 
 {$R *.dfm}
 
-Procedure TForm1.DrawMandelbrot(X, Y, MinX, MinY: Single; SizeX, SizeY, MaxCount: Integer);
-Var
+procedure TForm1.DrawMandelbrot(dX, dY, MinX, MinY: Single; SizeX, SizeY, MaxCount: Integer);
+var
   c1, c2, z1, z2, tmp: Single;
   i, j, Count: Integer;
   //Scanline stuff
   PicBuffer: TBitmap; //buffer
-  BufferArray: Array Of Array Of Byte; // Multi-dimension array
+  BufferArray: array of array of Byte; // Multi-dimension array
   P: PRGBTriple; //Scanline pointer
-  Palette: Array[0..255] Of TRGBTriple; //24bits RGB palettes
-Begin
-//Count will always be from 1<= count <= MaxIterations
+  Palette: array[0..255] of TRGBTriple; //24bits RGB palettes
+begin
+  //Count will always be from 1<= count <= MaxIterations
   //Initialise. otherwise unpredictable colours from whatever already in memory
-  For i := 0 To 255 Do
-  Begin
+  for i := 0 to 255 do
+  begin
     Palette[i].rgbtRed := 0;
     Palette[i].rgbtGreen := 0;
     Palette[i].rgbtBlue := 0;
-  End;
+  end;
   //Set colour palette
-  If Colour = 'Fire' Then
-  Begin
-    For i := 1 To (MaxIterations Div 3) Do
-    Begin
-      Palette[i].rgbtRed := (i * 255) Div (MaxIterations Div 3);
+  if Colour = 'Fire' then
+  begin
+    for i := 1 to (MaxIterations div 3) do
+    begin
+      Palette[i].rgbtRed := (i * 255) div (MaxIterations div 3);
       Palette[i].rgbtGreen := 0;
       Palette[i].rgbtBlue := 0;
-    End;
-    For i := (MaxIterations Div 3 + 1) To (2 * MaxIterations Div 3) Do
-    Begin
+    end;
+    for i := (MaxIterations div 3 + 1) to (2 * MaxIterations div 3) do
+    begin
       Palette[i].rgbtRed := 255;
-      Palette[i].rgbtGreen := ((i - MaxIterations Div 3) * 255) Div (MaxIterations Div 3);
+      Palette[i].rgbtGreen := ((i - MaxIterations div 3) * 255) div (MaxIterations div 3);
       Palette[i].rgbtBlue := 0;
-    End;
-    For i := (2 * MaxIterations Div 3 + 1) To MaxIterations Do
-    Begin
+    end;
+    for i := (2 * MaxIterations div 3 + 1) to MaxIterations do
+    begin
       Palette[i].rgbtRed := 255;
       Palette[i].rgbtGreen := 255;
-      Palette[i].rgbtBlue := ((i - 2 * MaxIterations Div 3) * 255) Div (MaxIterations Div 3);
-    End;
-  End
-  Else
-    For i := 0 To MaxIterations Do
-    Begin
+      Palette[i].rgbtBlue := ((i - 2 * MaxIterations div 3) * 255) div (MaxIterations div 3);
+    end;
+  end
+  else
+    for i := 0 to MaxIterations do
+    begin
       Palette[i].rgbtRed := 0;
       Palette[i].rgbtGreen := 0;
       Palette[i].rgbtBlue := 0;
-      If Colour = 'Blue' Then
-        Palette[i].rgbtBlue := (i * 255) Div MaxIterations
-      Else If Colour = 'Green' Then
-        Palette[i].rgbtGreen := (i * 255) Div MaxIterations
-      Else
-        Palette[i].rgbtRed := (i * 255) Div MaxIterations;
-    End;
+      if Colour = 'Blue' then
+        Palette[i].rgbtBlue := (i * 255) div MaxIterations
+      else if Colour = 'Green' then
+        Palette[i].rgbtGreen := (i * 255) div MaxIterations
+      else
+        Palette[i].rgbtRed := (i * 255) div MaxIterations;
+    end;
   //Size the buffer array according to previous variables, i.e. form size
   SetLength(BufferArray, SizeX, SizeY);
   //Initialise buffer
@@ -100,76 +102,55 @@ Begin
   PicBuffer.PixelFormat := pf24bit; //Use 24bits RGB, not TColor as we won't use alpha blending
   //Calculate Mandelbrot set
   c2 := MinY;
-  For i := 0 To SizeX - 1 Do
-  Begin
+  for i := 0 to SizeY - 1 do
+  begin
     c1 := MinX;
-    For j := 0 To SizeY - 1 Do
+    for j := 0 to SizeX - 1 do
     //Compute series iterations for this Z coordinate
-    Begin
+    begin
       z1 := 0;
       z2 := 0;
       Count := 0;
       //Count is deep of iteration of the mandelbrot set
       //If |z| >=2 then z is not a member of a Mandelbrot set
-      //Use * as faster than ^2 I was told
-      While ((z1 * z1 + z2 * z2 < 4.0) And (Count < MaxIterations)) Do
-      Begin
+      while ((z1 * z1 + z2 * z2 < 4.0) and (Count < MaxIterations)) do
+      begin
         tmp := z1;
         z1 := z1 * z1 - z2 * z2 + c1;
         z2 := 2 * tmp * z2 + c2;
         Inc(Count);
-      End;
+      end;
       //Colour pixel at Z coordinates
       //Colour from palette with index = number of iterations
-      BufferArray[i, j] := Count;
-      c1 := c1 + X;
-    End;
-    c2 := c2 + Y;
-  End;
+      BufferArray[j, i] := Count;
+      c1 := c1 + dX;
+    end;
+    c2 := c2 + dY;
+  end;
   //Populate buffer using scanline
-  For j := 0 To SizeY - 1 Do //Height-1 or pointer will fall out=crash!
-  Begin
+  for j := 0 to SizeY - 1 do //Height-1 or pointer will fall out=crash!
+  begin
     //Loop through Y, then X. This way we process the whole scanline in one go
     P := PicBuffer.ScanLine[j];
-    For i := 0 To SizeX - 1 Do //Width-1 or pointer will fall out=crash!
-    Begin
+    for i := 0 to SizeX - 1 do //Width-1 or pointer will fall out=crash!
+    begin
       //Set pixel colour according to index value in palettes
-      P^ := Palette[MaxIterations - BufferArray[j, i]];
+      P^ := Palette[MaxIterations - BufferArray[i, j]];
       //Increment pointer AFTER, otherwise we fail to process leftmost column
       Inc(P);
-    End;
-  End;
-    //Copy buffer to form canvas
-//Size image in Draw menu event, it seems to fail if doing it here if size > ca. 800 pixels
-//  Image1.Width := SizeX;
-//  Image1.Height := SizeY;
+    end;
+  end;
+  //Copy buffer to form canvas
   Image1.Canvas.Draw(0, 0, PicBuffer);
   //Canvas.Draw(0, 0, PicBuffer);
   //Free PicBuffer to avoid memory leak
   PicBuffer.Free;
-End;
+end;
 
-Procedure TForm1.FormClose(Sender: TObject; Var Action: TCloseAction);
-Var
+procedure TForm1.FormCreate(Sender: TObject);
+var
   myINI: TINIFile;
-Begin
-  //Save settings to INI file
-  myINI := TINIFile.Create(ExtractFilePath(Application.EXEName) + 'fractal.ini');
-  myINI.WriteInteger('Settings', 'CanvasWidth', CanvasWidth);
-  myINI.WriteInteger('Settings', 'CanvasHeight', CanvasHeight);
-  myINI.WriteFloat('Settings', 'Xmin', Xmin);
-  myINI.WriteFloat('Settings', 'Xmax', Xmax);
-  myINI.WriteFloat('Settings', 'Ymin', Ymin);
-  myINI.WriteFloat('Settings', 'Ymax', Ymax);
-  myINI.WriteInteger('Settings', 'MaxIterations', MaxIterations);
-  myINI.WriteString('Settings', 'Colour', Colour);
-  myINI.Free;
-End;
-
-Procedure TForm1.FormCreate(Sender: TObject);
-Var
-  myINI: TINIFile;
-Begin
+begin
   //Initialise options from INI file
   myINI := TINIFile.Create(ExtractFilePath(Application.EXEName) + 'fractal.ini');
   //Read settings from INI file
@@ -182,13 +163,30 @@ Begin
   MaxIterations := myINI.ReadInteger('Settings', 'MaxIterations', 255);
   Colour := myINI.ReadString('Settings', 'Colour', 'Red');
   myINI.Free;
-End;
+end;
 
-Procedure TForm1.mniDrawClick(Sender: TObject);
-Var
+procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
+var
+  myINI: TINIFile;
+begin
+  //Save settings to INI file
+  myINI := TINIFile.Create(ExtractFilePath(Application.EXEName) + 'fractal.ini');
+  myINI.WriteInteger('Settings', 'CanvasWidth', CanvasWidth);
+  myINI.WriteInteger('Settings', 'CanvasHeight', CanvasHeight);
+  myINI.WriteFloat('Settings', 'Xmin', Xmin);
+  myINI.WriteFloat('Settings', 'Xmax', Xmax);
+  myINI.WriteFloat('Settings', 'Ymin', Ymin);
+  myINI.WriteFloat('Settings', 'Ymax', Ymax);
+  myINI.WriteInteger('Settings', 'MaxIterations', MaxIterations);
+  myINI.WriteString('Settings', 'Colour', Colour);
+  myINI.Free;
+end;
+
+procedure TForm1.mniDrawClick(Sender: TObject);
+var
   dX, dY: Single;
   Start, Finish: Int64;
-Begin
+begin
   //Size window
   ClientWidth := CanvasWidth;
   ClientHeight := CanvasHeight;
@@ -205,40 +203,45 @@ Begin
   Finish := GetTickCount;
   Caption := 'Time: ' + IntToStr(Finish - Start) + 'ms';
   mniPNG.Enabled := True;
-End;
+end;
 
-Procedure TForm1.mniOptionsClick(Sender: TObject);
-Begin
-  If Form2.Visible = False Then
+procedure TForm1.mniOptionsClick(Sender: TObject);
+begin
+  if Form2.Visible = False then
     Form2.Show
-  Else
+  else
     Form2.Hide;
-End;
+end;
 
-Procedure TForm1.mniPNGClick(Sender: TObject);
-Var
+procedure TForm1.mniPNGClick(Sender: TObject);
+var
   i: Integer;
-  FileName: String;
+  FileName: string;
   PNG: TPNGObject;
-Begin
+begin
   FileName := 'fractal.png';
-  If fileexists(FileName) Then
-  Begin
+  if fileexists(FileName) then
+  begin
     i := 0;
-    Repeat
+    repeat
       Inc(i);
       FileName := 'fractal' + inttostr(i) + '.png';
-    Until Not fileexists(FileName);
-  End;
+    until not fileexists(FileName);
+  end;
   PNG := TPNGObject.Create;
-  Try
+  try
     PNG.Assign(Image1.Picture.Bitmap);
     PNG.SaveToFile(FileName);
     ShowMessage('Saved file ' + FileName);
-  Finally
+  finally
     PNG.Free;
-  End
-End;
+  end
+end;
 
-End.
+procedure TForm1.mniExitClick(Sender: TObject);
+begin
+  Close;
+end;
+
+end.
 
